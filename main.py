@@ -21,33 +21,35 @@ def knapsack_brute_force(W, weights, values, n) -> int:
 
 def knapsack_dynamic_programming(W, weights, values, n) -> int:
     '''
-    Create a a two-dementional array to represent a
-    memoization matrix/table: array m[0..W][0..n] is accessed as: m[column][row]
+    Create a a two-dementional array to represent a table:
+    array m[0..W][0..n] is accessed as: m[row][column]
     '''
-    m = [[-1 for x in range(n)] \
-        for y in range(W)]
+    m = [[-1 for x in range(W+1)] \
+        for y in range(n+1)]
 
     '''
     Initialize all cells of first column and first row to 0:
-    first, if there's no capacity then no items can be added
+    because if there's no capacity then no items can be added
     similarly, if there's no items then none can be added
     '''
-    for _ in range(W): m[_][0] = 0
-    for _ in range(n): m[0][_] = 0
+    for _ in range(n+1): m[_][0] = 0
+    for _ in range(W+1): m[0][_] = 0
 
-    for i in range(1, n):
-        for j in range(1, W):
-            if weights[i] > j:
-                # m[i, j] := m[i-1, j]
-                m[j][i] = m[j-1][i]
+    for i in range(1, n+1):
+        for j in range(1, W+1):
+            if weights[i-1] <= j:
+                m[i][j] = max(
+                            m[i-1][j],
+                            m[i-1][j-weights[i-1]] + values[i-1])
             else:
-                # m[i, j] := max(m[i-1, j], m[i-1, j-w[i]] + v[i])
-                m[j][i] = max(
-                            m[j-1][i],
-                            m[j-1][i-weights[j]] + values[i])
+                m[i][j] = m[i-1][j]
+    return m[-1][-1]
 
-    for _ in m:
-        print(_)
+'''
+Abdul Bari method: https://www.youtube.com/watch?v=zRza99HPvkQ
+'''
+def knapsack_dp_tabulation(m, w, p, n):
+    pass
 
 
 if __name__ == '__main__':
@@ -58,6 +60,7 @@ if __name__ == '__main__':
     values  = [50, 100, 150]
     # n is the number of distinct items
     n = len(values)
-
     print(knapsack_brute_force(capacity, weights, values, n))
-    # print(knapsack_dynamic_programming(capacity, weights, values, n))
+
+    print(knapsack_dynamic_programming(capacity, weights, values, n))
+    # print(knapsack_dp_tabulation())
